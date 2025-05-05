@@ -53,7 +53,9 @@ export const useComandStore = defineStore('comand', () => {
         });*/
         socket.emit('message', {
             type: "changeMode",
-            mode: mode,
+            data: {
+                mode: mode,
+            }
         });
     }
 
@@ -94,7 +96,10 @@ export const useComandStore = defineStore('comand', () => {
         });*/
         socket.emit('message', {
             type: "manualControl",
-            directions: directions
+            data: {
+                directions: directions
+            }
+
         });
         
         
