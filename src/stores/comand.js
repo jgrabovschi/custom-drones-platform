@@ -16,28 +16,54 @@ export const useComandStore = defineStore('comand', () => {
     }*/
 
     const sendTakeoffMessage = () =>{
-        socket.emit('takeoff');
+        /*socket.emit('takeoff',{
+            type: "takeoff"
+        });*/
+        socket.emit('message',{
+            type: "takeoff"
+        });
     }
 
     const sendLandMessage = () =>{
-        socket.emit('land');
+        /*socket.emit('land',{
+            type: "land"
+        });*/
+        socket.emit('message',{
+            type: "land"
+        });
     }
 
     const sendMoveLocalMessage = ( direction, metros) =>{
-        socket.emit('moveLocal', {
+        /*socket.emit('moveLocal', {
+            type: "moveLocal",
+            direction: direction,
+            metros: metros
+        });*/
+        socket.emit('message', {
+            type: "moveLocal",
             direction: direction,
             metros: metros
         });
     }
 
     const sendChangeModeMessage = ( mode) =>{
-        socket.emit('changeMode', {
+        /*socket.emit('changeMode', {
+            type: "changeMode",
+            mode: mode,
+        });*/
+        socket.emit('message', {
+            type: "changeMode",
             mode: mode,
         });
     }
 
     const sendArmDroneMessage = ( ) =>{
-        socket.emit('armDrone');
+        /*socket.emit('armDrone', {
+            type: "armDrone",
+        });*/
+        socket.emit('message', {
+            type: "armDrone",
+        });
     }
 
     const sendManualControlMessage = (directions) =>{
@@ -62,7 +88,12 @@ export const useComandStore = defineStore('comand', () => {
         manualControlDirectionsSent.value[2] = directions[2];
         manualControlDirectionsSent.value[3] = directions[3];
         console.log("mandei nova mensagem")
-        socket.emit('manualControl', {
+        /*socket.emit('manualControl', {
+            type: "manualControl",
+            directions: directions
+        });*/
+        socket.emit('message', {
+            type: "manualControl",
             directions: directions
         });
         

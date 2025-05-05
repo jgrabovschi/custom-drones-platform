@@ -11,6 +11,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.provide('socket', io("http://localhost:12345"))
-app.provide('janus-ws', "ws://localhost:8188/janus")
+app.provide('socket', io("ws://localhost:10000"))
+app.provide('janus-ws', "ws://10.20.229.142:8188/janus")
 app.mount('#app')
