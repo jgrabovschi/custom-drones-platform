@@ -41,8 +41,11 @@ export const useComandStore = defineStore('comand', () => {
         });*/
         socket.emit('message', {
             type: "moveLocal",
-            direction: direction,
-            metros: metros
+            data: {
+                direction: direction,
+                metros: metros
+            }
+            
         });
     }
 
