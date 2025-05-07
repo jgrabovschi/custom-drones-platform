@@ -7,11 +7,18 @@ import JanusClient from '@/components/JanusClient.vue'
 
 const comandStore = useComandStore();
 const numeroMetros = ref(0);
+const yaw = ref(0);
+const isCardinal = ref(true);
+const selectedMode = ref("");
 
 const handleClick = (direction) =>{
     //console.log("direction: " + direction);
     //console.log("metros para andar: " + numeroMetros.value);
-    comandStore.sendMoveLocalMessage(direction,numeroMetros.value)
+    if(isCardinal.value){
+      comandStore.sendMoveLocalCardinalMessage(direction,numeroMetros.value)
+    }else{
+      comandStore.sendMoveLocalMessage(direction,numeroMetros.value)
+    }
 }
 
 const handleAction = (action) =>{
@@ -24,11 +31,23 @@ const handleAction = (action) =>{
 }
 
 const changeMode = () =>{
-  comandStore.sendChangeModeMessage("ALT_HOLD");
+  if(selectedMode.value != ""){
+    comandStore.sendChangeModeMessage(selectedMode.value);
+  }
+  
 }
+
+const changeDirectionType = () =>{
+  isCardinal.value = !isCardinal.value
+}
+
 
 const armSystem = () =>{
   comandStore.sendArmDroneMessage();
+}
+
+const sendYaw = () =>{
+  comandStore.sendYawMessage(yaw.value);
 }
 
 
@@ -37,19 +56,9 @@ const armSystem = () =>{
 
 
 const directions = ref([0,0,0,0]); //frente,tras,direita,esquerda,cima,baixo
-const yaw = ref(0);
 //const elapsedTime = ref(0); // Elapsed time in milliseconds
 const isRunning = ref(false);
 let intervalId = null;
-
-// Start the stopwatch
-/*const startStopwatch = () => {
-  if (!isRunning.value) {
-    isRunning.value = true;
-    startTime.value = Date.now() - elapsedTime.value; // Account for paused time
-    intervalId = setInterval(updateElapsedTime, 10);
-  }
-};*/
 
 // mandar direções
 const manualControl = () => {
@@ -249,20 +258,41 @@ onMounted(() => {
     <JanusClient />
   </div>
   <div class="max-w-xl mx-auto p-6 space-y-6">
-    <!-- Top Controls -->
-    <div class="flex justify-between gap-4">
-      <Button @click="changeMode">Change Mode</Button>
+    <!-- Top Controls with Select -->
+    <div class="flex justify-between gap-4 items-center">
+      <div class="flex gap-2 items-center">
+        <Button @click="changeMode">Change Mode</Button>
+        <select v-model="selectedMode" class="border rounded px-2 py-1">
+          <option value="GUIDED">Guided</option>
+          <option value="STABILIZE">Stabilize</option>
+          <option value="ALT_HOLD">Altitude Hold</option>
+        </select>
+      </div>
+
+      <Button @click="changeDirectionType">Change type of direction</Button>
       <Button variant="destructive" @click="armSystem">Arm</Button>
     </div>
 
-    <!-- Cardinal Controls -->
-    <div class="grid grid-cols-3 gap-4 items-center justify-items-center">
+    <!-- Cardinal Controls with Diagonals -->
+    <div class="grid grid-cols-5 gap-8 items-center justify-items-center">
+      <!-- Top row: NW, North, NE -->
+      <Button @click="handleClick(isCardinal ? 'Northwest' : 'Back Left')">
+        {{ isCardinal ? 'Northwest' : 'Back Left' }}
+      </Button>
       <div></div>
-      <Button @click="handleClick('North')">North</Button>
+      <Button @click="handleClick(isCardinal ? 'North' : 'Forward')">
+        {{ isCardinal ? 'North' : 'Forward' }}
+      </Button>
       <div></div>
+      <Button @click="handleClick(isCardinal ? 'Northeast' : 'Back Right')">
+        {{ isCardinal ? 'Northeast' : 'Back Right' }}
+      </Button>
 
-      <Button @click="handleClick('West')">West</Button>
-
+      <!-- Middle row: West, Input, East -->
+      <div></div>
+      <Button @click="handleClick(isCardinal ? 'West' : 'Left')">
+        {{ isCardinal ? 'West' : 'Left' }}
+      </Button>
       <Input
         v-model="numeroMetros"
         type="number"
@@ -271,12 +301,35 @@ onMounted(() => {
         max="100"
         class="text-center"
       />
-
-      <Button @click="handleClick('East')">East</Button>
-
+      <Button @click="handleClick(isCardinal ? 'East' : 'Right')">
+        {{ isCardinal ? 'East' : 'Right' }}
+      </Button>
       <div></div>
-      <Button @click="handleClick('South')">South</Button>
+
+      <!-- Bottom row: SW, South, SE -->
+      <Button @click="handleClick(isCardinal ? 'Southwest' : 'Front Left')">
+        {{ isCardinal ? 'Southwest' : 'Front Left' }}
+      </Button>
       <div></div>
+      <Button @click="handleClick(isCardinal ? 'South' : 'Back')">
+        {{ isCardinal ? 'South' : 'Back' }}
+      </Button>
+      <div></div>
+      <Button @click="handleClick(isCardinal ? 'Southeast' : 'Front Right')">
+        {{ isCardinal ? 'Southeast' : 'Front Right' }}
+      </Button>
+    </div>
+
+    <div v-if="!isCardinal" class="flex justify-center items-center gap-4 mt-4">
+      <Input
+        v-model="yaw"
+        type="number"
+        :min="-360"
+        :max="360"
+        placeholder="0 - 360"
+        class="w-32 text-center"
+      />
+      <Button @click="sendYaw">Yaw</Button>
     </div>
 
     <!-- Action Buttons -->

@@ -33,12 +33,23 @@ export const useComandStore = defineStore('comand', () => {
         });
     }
 
-    const sendMoveLocalMessage = ( direction, metros) =>{
+    const sendMoveLocalCardinalMessage = ( direction, metros) =>{
         /*socket.emit('moveLocal', {
             type: "moveLocal",
             direction: direction,
             metros: metros
         });*/
+        socket.emit('message', {
+            type: "moveLocalCardinal",
+            data: {
+                direction: direction,
+                metros: metros
+            }
+            
+        });
+    }
+    const sendMoveLocalMessage = ( direction, metros) =>{
+        
         socket.emit('message', {
             type: "moveLocal",
             data: {
@@ -48,6 +59,17 @@ export const useComandStore = defineStore('comand', () => {
             
         });
     }
+    const sendYawMessage = (yaw) =>{
+        
+        socket.emit('message', {
+            type: "yaw",
+            data: {
+                yaw: yaw,
+            }
+            
+        });
+    }
+    
 
     const sendChangeModeMessage = ( mode) =>{
         /*socket.emit('changeMode', {
@@ -114,7 +136,7 @@ export const useComandStore = defineStore('comand', () => {
     })
 
     return {
-        messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalMessage,sendManualControlMessage,
-        manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage
+        messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalCardinalMessage,sendManualControlMessage,
+        manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage
     }
 })
