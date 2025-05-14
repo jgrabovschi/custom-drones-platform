@@ -8,6 +8,13 @@ export const useComandStore = defineStore('comand', () => {
 
     const messages = ref("")
 
+    const statusGPS = ref(null);
+    const statusEKF = ref(null);
+    const isReadyToFly = ref(false);
+    const x = ref(0);
+    const y = ref(0);
+    const z = ref(0);
+
     const manualControlDirectionsSent = ref([0,0,0,0])
     
     /*const sendMessageToChat = (message) => {
@@ -83,7 +90,13 @@ export const useComandStore = defineStore('comand', () => {
             }
         });
     }
-
+    
+    const sendPreArmCheckDroneMessage = ( ) =>{
+    
+        socket.emit('message', {
+            type: "preArmCheck",
+        });
+    }
     const sendArmDroneMessage = ( ) =>{
         /*socket.emit('armDrone', {
             type: "armDrone",
@@ -91,6 +104,9 @@ export const useComandStore = defineStore('comand', () => {
         socket.emit('message', {
             type: "armDrone",
         });
+        /*socket.emit('message', {
+            type: "preArmCheck",
+        });*/
     }
 
     const sendManualControlMessage = (directions) =>{
@@ -135,8 +151,91 @@ export const useComandStore = defineStore('comand', () => {
         messages.value = message;
     })
 
+    socket.on('PreArmCheck', (message) => {
+        console.log("mandei nova mensagem de prearm")
+        messages.value = "";
+        messages.value = message;
+        statusEKF.value = message['EKF'];
+        statusGPS.value = message['GPS'];
+        console.log("ekf:", statusEKF.value);
+        console.log("GPS:", statusGPS.value);
+        isReadyToFly.value = checkIfIsReadyToFly(statusEKF.value, statusGPS.value)
+
+        
+    })
+
+    socket.on('infoCoordenadas', (message) => {
+        
+        x.value = ""
+        x.value = message['x'];
+        y.value = ""
+        y.value = message['y'];
+        z.value = ""
+        z.value = message['z'];
+        
+
+        
+    })
+    
+
+    function checkIfIsReadyToFly(statusEKF, statusGPS){
+
+        for (let i = 0; i < 12; i++) {
+            if ((statusEKF & (1 << i)) !== 0) {
+              //console.log(`Bit at position ${i} is 1`);
+              //console.log(i)
+              //console.log(enumEKF(i))
+            }
+        }
+            if ((statusEKF & (1 << 0)) &&  // attitude
+            (statusEKF & (1 << 1)) &&  // velocity_horiz
+            (statusEKF & (1 << 2)) &&  // velocity_vert
+            //(statusEKF & ((1 << 3) | (1 << 4))) &&  // pos_horiz_abs OR pos_horiz_rel
+            //(statusEKF & ((1 << 5) | (1 << 6))) &&  // pos_vert_abs OR pos_vert_agl
+            !(statusEKF & (1 << 10)) &&  // gps_glitch
+            !(statusEKF & (1 << 11)))    // accel_error
+        {
+            if(statusGPS >= 3){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function enumEKF(flag){
+        switch(flag){
+            case 0:
+                return "ESTIMATOR_ATTITUDE";
+            case 1:
+                return "ESTIMATOR_VELOCITY_HORIZ";
+            case 2:
+                return "ESTIMATOR_VELOCITY_VERT";
+            case 3:
+                return "ESTIMATOR_POS_HORIZ_REL";
+            case 4:
+                return "ESTIMATOR_POS_HORIZ_ABS";
+            case 5:
+                return "ESTIMATOR_POS_VERT_ABS";
+            case 6:
+                return "ESTIMATOR_POS_VERT_AGL";
+            case 7:
+                return "ESTIMATOR_CONST_POS_MODE";
+            case 8:
+                return "ESTIMATOR_PRED_POS_HORIZ_REL";
+            case 9:
+                return "ESTIMATOR_PRED_POS_HORIZ_ABS";
+            case 10:
+                return "ESTIMATOR_GPS_GLITCH";
+            case 11:
+                return "ESTIMATOR_ACCEL_ERROR";
+        }
+    }
+
+
     return {
         messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalCardinalMessage,sendManualControlMessage,
-        manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage
+        manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage,
+        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z
     }
 })

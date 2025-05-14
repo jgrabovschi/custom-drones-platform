@@ -42,6 +42,9 @@ const changeDirectionType = () =>{
 }
 
 
+const preArmSystem = () =>{
+  comandStore.sendPreArmCheckDroneMessage();
+}
 const armSystem = () =>{
   comandStore.sendArmDroneMessage();
 }
@@ -81,41 +84,6 @@ const stop = () => {
 
 //funções para manual control
 
-
-
-/*function keyDownDirection(event) {
-  if (event.key === 'w' || event.key === 'W') {
-      directions.value[0] = true;
-      directions.value[1] = false;
-  }
-
-  if (event.key === 's' || event.key === 'S') {
-      directions.value[1] = true;
-      directions.value[0] = false;
-  }
-
-  if (event.key === 'd' || event.key === 'd') {
-      directions.value[2] = true;
-      directions.value[3] = false;
-  }
-
-  if (event.key === 'a' || event.key === 'A') {
-      directions.value[3] = true;
-      directions.value[2] = false;
-  }
-
-  if (event.key === 'e' || event.key === 'E') {
-      directions.value[4] = true;
-      directions.value[5] = false;
-  }
-
-  if (event.key === 'q' || event.key === 'Q') {
-      directions.value[5] = true;
-      directions.value[4] = false;
-  }
-
-  intervalId = setInterval(manualControl, 500);
-}*/
 
 function keyDownDirection(event) {
   if (event.key === 'w' || event.key === 'W') {
@@ -157,44 +125,6 @@ function keyDownDirection(event) {
   
 }
 
-/*function keyUpDirection(event) {
-
-  let isRunning = null;
-  if (event.key === 'w' || event.key === 'W') {
-      directions.value[0] = false;
-  }
-
-  if (event.key === 's' || event.key === 's') {
-      directions.value[1] = false;
-  }
-
-  if (event.key === 'd' || event.key === 'D') {
-      directions.value[2] = false;
-  }
-
-  if (event.key === 'a' || event.key === 'A') {
-      directions.value[3] = false;
-  }
-
-  if (event.key === 'e' || event.key === 'E') {
-      directions.value[4] = false;
-  }
-
-  if (event.key === 'q' || event.key === 'Q') {
-      directions.value[5] = false;
-  }
-
-  directions.value.forEach(element => {
-    if(element = true){
-      isRunning = true;
-    }
-  });
-
-  if (!isRunning){
-    clearInterval(intervalId);
-  }
-}*/
-
 function keyUpDirection(event) {
 
   
@@ -230,19 +160,6 @@ function keyUpDirection(event) {
     directions.value[3] = 0;
   }
 
-  /*let keyPressed = false;
-
-  directions.value.forEach(element => {
-    if(element == 1 || element == -1){
-      keyPressed = true;
-    }
-  });
-
-  
-  if (!keyPressed){
-    stop();
-    //clearInterval(intervalId);
-  }*/
 }
 
 
@@ -251,6 +168,13 @@ onMounted(() => {
   window.addEventListener('keyup', keyUpDirection);
 });
 
+/*watch(comandStore.statusEKF, (statusEKF) => {
+  console.log(`Status EKF is ${statusEKF}`)
+})
+
+watch(comandStore.statusGPS, (statusGPS) => {
+  console.log(`Status GPS is ${statusGPS}`)
+})*/
 </script>
 
 <template>
@@ -270,27 +194,29 @@ onMounted(() => {
       </div>
 
       <Button @click="changeDirectionType">Change type of direction</Button>
-      <Button variant="destructive" @click="armSystem">Arm</Button>
+      <Button variant="destructive" @click="preArmSystem">PreArm Check</Button>
+      <Button v-if="comandStore.isReadyToFly" variant="destructive" @click="armSystem">Arm</Button>
+      <Button v-else variant="destructive">Can't Arm</Button>
     </div>
 
     <!-- Cardinal Controls with Diagonals -->
     <div class="grid grid-cols-5 gap-8 items-center justify-items-center">
       <!-- Top row: NW, North, NE -->
-      <Button @click="handleClick(isCardinal ? 'Northwest' : 'Back Left')">
-        {{ isCardinal ? 'Northwest' : 'Back Left' }}
+      <Button @click="handleClick([1,-1,0,0])">
+        {{ isCardinal ? 'Northwest' : 'Forward Left' }}
       </Button>
       <div></div>
-      <Button @click="handleClick(isCardinal ? 'North' : 'Forward')">
+      <Button @click="handleClick([1,0,0,0])">
         {{ isCardinal ? 'North' : 'Forward' }}
       </Button>
       <div></div>
-      <Button @click="handleClick(isCardinal ? 'Northeast' : 'Back Right')">
-        {{ isCardinal ? 'Northeast' : 'Back Right' }}
+      <Button @click="handleClick([1,1,0,0])">
+        {{ isCardinal ? 'Northeast' : 'Forward Right' }}
       </Button>
 
       <!-- Middle row: West, Input, East -->
       <div></div>
-      <Button @click="handleClick(isCardinal ? 'West' : 'Left')">
+      <Button @click="handleClick([0,-1,0,0])">
         {{ isCardinal ? 'West' : 'Left' }}
       </Button>
       <Input
@@ -301,22 +227,22 @@ onMounted(() => {
         max="100"
         class="text-center"
       />
-      <Button @click="handleClick(isCardinal ? 'East' : 'Right')">
+      <Button @click="handleClick([0,1,0,0])">
         {{ isCardinal ? 'East' : 'Right' }}
       </Button>
       <div></div>
 
       <!-- Bottom row: SW, South, SE -->
-      <Button @click="handleClick(isCardinal ? 'Southwest' : 'Front Left')">
-        {{ isCardinal ? 'Southwest' : 'Front Left' }}
+      <Button @click="handleClick([-1,-1,0,0])">
+        {{ isCardinal ? 'Southwest' : 'Back Left' }}
       </Button>
       <div></div>
-      <Button @click="handleClick(isCardinal ? 'South' : 'Back')">
+      <Button @click="handleClick([-1,0,0,0])">
         {{ isCardinal ? 'South' : 'Back' }}
       </Button>
       <div></div>
-      <Button @click="handleClick(isCardinal ? 'Southeast' : 'Front Right')">
-        {{ isCardinal ? 'Southeast' : 'Front Right' }}
+      <Button @click="handleClick([-1,1,0,0])">
+        {{ isCardinal ? 'Southeast' : 'Back Right' }}
       </Button>
     </div>
 
@@ -342,6 +268,23 @@ onMounted(() => {
     <div class="text-sm text-muted-foreground">
       <p><strong>Message Ack:</strong> {{ comandStore.messages }}</p>
       <p><strong>Teste Ack:</strong> {{ directions }}</p>
+      <p><strong>X:</strong> {{ comandStore.x.toFixed(2) }} M <strong>Y:</strong> {{ comandStore.y.toFixed(2) }} M
+        <strong>Z:</strong> {{ comandStore.z.toFixed(2) }} M
+      </p>
+    </div>
+
+    <div class="mt-8 border-t pt-6">
+      <h2 class="text-xl font-semibold mb-4">
+        {{ comandStore.isReadyToFly ? '✅ Ready to Fly' : '❌ Not Ready' }}
+      </h2>
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div><strong>Velocity_horiz:</strong> {{ (( comandStore.statusEKF & (1 << 1)) !== 0) ? 'OK' : 'Error' }}</div>
+        <div><strong>velocity_vert:</strong> {{ (( comandStore.statusEKF & (1 << 2)) !== 0) ? 'OK' : 'Error' }}</div>
+        <div><strong>pos_horiz_abs or pos_horiz_rel :</strong> {{ (( comandStore.statusEKF & (1 << 3)) !== 0) ? 'OK' : 'Error' }}</div>
+        <div><strong>pos_vert_abs or pos_vert_agl:</strong> {{ (( comandStore.statusEKF & (1 << 5)) !== 0) ? 'OK' : 'Error' }}</div>
+        <div><strong>GPS Status:</strong> {{ (( comandStore.statusEKF & (1 << 10)) !== 0) ? 'Error' : 'OK' }}</div>
+        <div><strong>Accel_error:</strong> {{ (( comandStore.statusEKF & (1 << 11)) !== 0) ? 'Error' : 'OK' }}</div>
+      </div>
     </div>
   </div>
 </template>
