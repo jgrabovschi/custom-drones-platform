@@ -196,7 +196,7 @@ watch(comandStore.statusGPS, (statusGPS) => {
       <Button @click="changeDirectionType">Change type of direction</Button>
       <Button variant="destructive" @click="preArmSystem">PreArm Check</Button>
       <Button v-if="comandStore.isReadyToFly" variant="destructive" @click="armSystem">Arm</Button>
-      <Button v-else variant="destructive">Can't Arm</Button>
+      <Button v-else variant="destructive" @click="armSystem">Can't Arm</Button>
     </div>
 
     <!-- Cardinal Controls with Diagonals -->
