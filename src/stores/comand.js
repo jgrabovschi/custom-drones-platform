@@ -10,6 +10,7 @@ export const useComandStore = defineStore('comand', () => {
 
     const statusGPS = ref(null);
     const statusEKF = ref(null);
+    const sensorsHealth = ref(null);
     const isReadyToFly = ref(false);
     const x = ref(0);
     const y = ref(0);
@@ -155,11 +156,13 @@ export const useComandStore = defineStore('comand', () => {
         console.log("mandei nova mensagem de prearm")
         messages.value = "";
         messages.value = message;
-        statusEKF.value = message['EKF'];
-        statusGPS.value = message['GPS'];
-        console.log("ekf:", statusEKF.value);
-        console.log("GPS:", statusGPS.value);
-        isReadyToFly.value = checkIfIsReadyToFly(statusEKF.value, statusGPS.value)
+        //statusEKF.value = message['EKF'];
+        //statusGPS.value = message['GPS'];
+        sensorsHealth.value = message['sensorsHealth'];
+        //console.log("ekf:", statusEKF.value);
+        //console.log("GPS:", statusGPS.value);
+        console.log("sensoresHealth", sensorsHealth.value  );
+        isReadyToFly.value = checkIfIsReadyToFly(sensorsHealth.value)
 
         
     })
@@ -177,8 +180,84 @@ export const useComandStore = defineStore('comand', () => {
         
     })
     
+    function areRequiredSensorsOK(sensorsHealth, flightMode) {
+        const requiredSensorsByMode = {
+            "STABILIZE": [
+                "z/altitude Control",
+                "RC Receiver",
+                "Gyro (1st 3D)",
+                "Accelerometer (1st 3D)",
+                "Magnetometer (1st 3D)",
+                "Absolute Pressure",
+                "GPS",
+                "Angular Rate Control",
+                "Attitude Stabilization",
+                "Yaw Position",
+                "Motor Outputs/Control",
+                "AHRS",
+                "Terrain",                                        
+                "Battery", 
+            ],
+            "ALT_HOLD": [
+                "z/altitude Control",
+                "RC Receiver",
+                "Gyro (1st 3D)",
+                "Accelerometer (1st 3D)",
+                "Magnetometer (1st 3D)",
+                "Absolute Pressure",
+                "GPS",
+                "Angular Rate Control",
+                "Attitude Stabilization",
+                "Yaw Position",
+                "Motor Outputs/Control",
+                "AHRS",
+                "Terrain",                                        
+                "Battery", 
+            ],
+            "GUIDED": [
+                "z/altitude Control",
+                "x/y altitude Control",
+                "RC Receiver",
+                "Gyro (1st 3D)",
+                "Accelerometer (1st 3D)",
+                "Magnetometer (1st 3D)",
+                "Absolute Pressure",
+                "GPS",
+                "Angular Rate Control",
+                "Attitude Stabilization",
+                "Yaw Position",
+                "Motor Outputs/Control",
+                "AHRS",
+                "Terrain",                   
+                "Logging",                      
+                "Battery",   
+            ],
+            // Add more modes as needed
+            };
 
-    function checkIfIsReadyToFly(statusEKF, statusGPS){
+        const required = requiredSensorsByMode[flightMode] || [];
+        const failed = required.filter(sensor => !sensorsHealth[sensor]);
+        console.log(failed)
+        return {
+            allOK: failed.length === 0,
+            failedSensors: failed
+        };
+    }
+
+    function checkIfIsReadyToFly(sensorsHealth){
+        
+
+        var flightMode = "GUIDED";
+        const { allOK, failedSensors } = areRequiredSensorsOK(sensorsHealth, flightMode);
+        
+        if (allOK) {
+            console.log("✅ All required sensors for", flightMode, "are OK");
+            return true
+        } 
+        return false;
+    }
+
+    /*function checkIfIsReadyToFly(statusEKF, statusGPS){
 
         for (let i = 0; i < 12; i++) {
             if ((statusEKF & (1 << i)) !== 0) {
@@ -201,7 +280,7 @@ export const useComandStore = defineStore('comand', () => {
         }
 
         return false;
-    }
+    }*/
 
     function enumEKF(flag){
         switch(flag){
@@ -236,6 +315,6 @@ export const useComandStore = defineStore('comand', () => {
     return {
         messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalCardinalMessage,sendManualControlMessage,
         manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage,
-        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z
+        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z,sensorsHealth
     }
 })

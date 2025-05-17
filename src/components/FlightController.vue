@@ -277,13 +277,18 @@ watch(comandStore.statusGPS, (statusGPS) => {
       <h2 class="text-xl font-semibold mb-4">
         {{ comandStore.isReadyToFly ? '✅ Ready to Fly' : '❌ Not Ready' }}
       </h2>
-      <div class="grid grid-cols-2 gap-4 text-sm">
+      <!--<div class="grid grid-cols-2 gap-4 text-sm">
         <div><strong>Velocity_horiz:</strong> {{ (( comandStore.statusEKF & (1 << 1)) !== 0) ? 'OK' : 'Error' }}</div>
         <div><strong>velocity_vert:</strong> {{ (( comandStore.statusEKF & (1 << 2)) !== 0) ? 'OK' : 'Error' }}</div>
         <div><strong>pos_horiz_abs or pos_horiz_rel :</strong> {{ (( comandStore.statusEKF & (1 << 3)) !== 0) ? 'OK' : 'Error' }}</div>
         <div><strong>pos_vert_abs or pos_vert_agl:</strong> {{ (( comandStore.statusEKF & (1 << 5)) !== 0) ? 'OK' : 'Error' }}</div>
         <div><strong>GPS Status:</strong> {{ (( comandStore.statusEKF & (1 << 10)) !== 0) ? 'Error' : 'OK' }}</div>
         <div><strong>Accel_error:</strong> {{ (( comandStore.statusEKF & (1 << 11)) !== 0) ? 'Error' : 'OK' }}</div>
+      </div>-->
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div v-for="(isActive, label) in comandStore.sensorsHealth" :key="label">
+          <strong>{{ label }}:</strong> {{ isActive ? 'OK' : 'Error' }}
+        </div>
       </div>
     </div>
   </div>
