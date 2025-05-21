@@ -286,8 +286,11 @@ watch(comandStore.statusGPS, (statusGPS) => {
         <div><strong>Accel_error:</strong> {{ (( comandStore.statusEKF & (1 << 11)) !== 0) ? 'Error' : 'OK' }}</div>
       </div>-->
       <div class="grid grid-cols-2 gap-4 text-sm">
-        <div v-for="(isActive, label) in comandStore.sensorsHealth" :key="label">
-          <strong>{{ label }}:</strong> {{ isActive ? 'OK' : 'Error' }}
+        <div>
+          <strong>Flight mode: </strong> {{ comandStore.modeDrone }}
+        </div>
+        <div v-for="(label) in comandStore.sensorsUsed" :key="label">
+          <strong>{{ label }}:</strong> {{ comandStore.sensorsHealth[label] ? 'OK' : 'Error' }}
         </div>
       </div>
     </div>

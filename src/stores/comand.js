@@ -11,6 +11,8 @@ export const useComandStore = defineStore('comand', () => {
     const statusGPS = ref(null);
     const statusEKF = ref(null);
     const sensorsHealth = ref(null);
+    const sensorsUsed = ref(null);
+    const modeDrone = ref(null);
     const isReadyToFly = ref(false);
     const x = ref(0);
     const y = ref(0);
@@ -159,10 +161,11 @@ export const useComandStore = defineStore('comand', () => {
         //statusEKF.value = message['EKF'];
         //statusGPS.value = message['GPS'];
         sensorsHealth.value = message['sensorsHealth'];
+        modeDrone.value = message['modeDrone'];
         //console.log("ekf:", statusEKF.value);
         //console.log("GPS:", statusGPS.value);
         console.log("sensoresHealth", sensorsHealth.value  );
-        isReadyToFly.value = checkIfIsReadyToFly(sensorsHealth.value)
+        [isReadyToFly.value, sensorsUsed.value] = checkIfIsReadyToFly(sensorsHealth.value, modeDrone.value)
 
         
     })
@@ -183,7 +186,6 @@ export const useComandStore = defineStore('comand', () => {
     function areRequiredSensorsOK(sensorsHealth, flightMode) {
         const requiredSensorsByMode = {
             "STABILIZE": [
-                "z/altitude Control",
                 "RC Receiver",
                 "Gyro (1st 3D)",
                 "Accelerometer (1st 3D)",
@@ -239,22 +241,22 @@ export const useComandStore = defineStore('comand', () => {
         const failed = required.filter(sensor => !sensorsHealth[sensor]);
         console.log(failed)
         return {
-            allOK: failed.length === 0,
-            failedSensors: failed
+            allOK: failed.length == 0,
+            failedSensors: failed,
+            sensoresUsed: required
         };
     }
 
-    function checkIfIsReadyToFly(sensorsHealth){
+    function checkIfIsReadyToFly(sensorsHealth, modeDrone){
         
 
-        var flightMode = "GUIDED";
-        const { allOK, failedSensors } = areRequiredSensorsOK(sensorsHealth, flightMode);
+        const { allOK, failedSensors, sensoresUsed } = areRequiredSensorsOK(sensorsHealth, modeDrone);
         
         if (allOK) {
-            console.log("✅ All required sensors for", flightMode, "are OK");
-            return true
+            console.log("✅ All required sensors for", modeDrone, "are OK");
+            return [true, sensoresUsed];
         } 
-        return false;
+        return [false, sensoresUsed];
     }
 
     /*function checkIfIsReadyToFly(statusEKF, statusGPS){
@@ -315,6 +317,7 @@ export const useComandStore = defineStore('comand', () => {
     return {
         messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalCardinalMessage,sendManualControlMessage,
         manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage,
-        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z,sensorsHealth
+        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z,sensorsHealth, sensorsUsed,
+        modeDrone
     }
 })
