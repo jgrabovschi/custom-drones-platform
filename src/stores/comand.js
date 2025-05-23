@@ -170,6 +170,22 @@ export const useComandStore = defineStore('comand', () => {
         
     })
 
+    socket.on('ACKMessage', (message) => {
+        console.log("mandei nova mensagem de prearm")
+        messages.value = "";
+        messages.value = message.msg;
+        //statusEKF.value = message['EKF'];
+        //statusGPS.value = message['GPS'];
+        sensorsHealth.value = message['sensorsHealth'];
+        modeDrone.value = message['modeDrone'];
+        //console.log("ekf:", statusEKF.value);
+        //console.log("GPS:", statusGPS.value);
+        console.log("sensoresHealth", sensorsHealth.value  );
+        [isReadyToFly.value, sensorsUsed.value] = checkIfIsReadyToFly(sensorsHealth.value, modeDrone.value)
+
+        
+    })
+
     socket.on('infoCoordenadas', (message) => {
         
         x.value = ""
