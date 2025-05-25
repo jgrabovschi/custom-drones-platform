@@ -144,6 +144,7 @@ const handleSubmit = () => {
         room: roomId,
         ptype: "publisher",
         display: "monitor-client",
+        pin:  "dB0iD51d",
       },
     });
 
@@ -210,6 +211,7 @@ const handleSubmit = () => {
         ptype: "subscriber",
         room: roomId,
         feed: feedId,
+        pin:  "dB0iD51d",
       },
       session_id: sessionId,
       handle_id: subscriberHandle,
