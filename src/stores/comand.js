@@ -189,15 +189,10 @@ export const useComandStore = defineStore('comand', () => {
 
     socket.on('infoCoordenadas', (message) => {
         
-        /*x.value = ""
-        x.value = message['metrics']['x'];
-        y.value = ""
-        y.value = message['metrics']['y'];
-        z.value = ""
-        z.value = message['metrics']['z'];*/
+        
         metrics.value = message['metrics'];
-        console.log(message)
-        console.log(metrics.value)
+        //console.log(message)
+        //console.log(metrics.value)
         
 
         
