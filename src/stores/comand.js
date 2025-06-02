@@ -14,9 +14,10 @@ export const useComandStore = defineStore('comand', () => {
     const sensorsUsed = ref(null);
     const modeDrone = ref(null);
     const isReadyToFly = ref(false);
-    const x = ref(0);
-    const y = ref(0);
-    const z = ref(0);
+    //const x = ref(0);
+    //const y = ref(0);
+    //const z = ref(0);
+    const metrics = ref(null);
 
     const manualControlDirectionsSent = ref([0,0,0,0])
     
@@ -188,12 +189,15 @@ export const useComandStore = defineStore('comand', () => {
 
     socket.on('infoCoordenadas', (message) => {
         
-        x.value = ""
-        x.value = message['x'];
+        /*x.value = ""
+        x.value = message['metrics']['x'];
         y.value = ""
-        y.value = message['y'];
+        y.value = message['metrics']['y'];
         z.value = ""
-        z.value = message['z'];
+        z.value = message['metrics']['z'];*/
+        metrics.value = message['metrics'];
+        console.log(message)
+        console.log(metrics.value)
         
 
         
@@ -333,7 +337,7 @@ export const useComandStore = defineStore('comand', () => {
     return {
         messages, sendTakeoffMessage, sendLandMessage, sendMoveLocalCardinalMessage,sendManualControlMessage,
         manualControlDirectionsSent, sendChangeModeMessage, sendArmDroneMessage,sendMoveLocalMessage, sendYawMessage,
-        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,x,y,z,sensorsHealth, sensorsUsed,
-        modeDrone
+        statusEKF, statusGPS, isReadyToFly, enumEKF, sendPreArmCheckDroneMessage,sensorsHealth, sensorsUsed,
+        modeDrone, metrics
     }
 })

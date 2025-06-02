@@ -265,12 +265,27 @@ watch(comandStore.statusGPS, (statusGPS) => {
     </div>
 
     <!-- Status -->
-    <div class="text-sm text-muted-foreground">
-      <p><strong>Message Ack:</strong> {{ comandStore.messages }}</p>
-      <p><strong>Teste Ack:</strong> {{ directions }}</p>
-      <p><strong>X:</strong> {{ comandStore.x.toFixed(2) }} M <strong>Y:</strong> {{ comandStore.y.toFixed(2) }} M
-        <strong>Z:</strong> {{ comandStore.z.toFixed(2) }} M
-      </p>
+    <div class="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+      <div>
+        <p><strong>Lat:</strong> {{ comandStore.metrics["lat"] ?? 'N/A'  }}</p>
+        <p><strong>Lng:</strong> {{ comandStore.metrics["lng"] ?? 'N/A'}}</p>
+        <p><strong>Alt:</strong> {{ comandStore.metrics["alt"] ?? 'N/A'}}</p>
+        <p><strong>Vel X:</strong> {{ comandStore.metrics["velX"] ?? 'N/A'}}</p>
+        <p><strong>Vel Y:</strong> {{ comandStore.metrics["velY"] ?? 'N/A'}}</p>
+      </div>
+      <div>
+        <p><strong>Vel Z:</strong> {{ comandStore.metrics["velZ"] ?? 'N/A'}}</p>
+        <p><strong>Battery:</strong> {{ comandStore.metrics["batLvL"] ?? 'N/A'}}%</p>
+        <p><strong>Heading:</strong> {{ comandStore.metrics["hdg"] ?? 'N/A'}}</p>
+        <p><strong>Satellites:</strong> {{ comandStore.metrics["satCount"] ?? 'N/A'}}</p>
+        <p><strong>Traveling:</strong> {{ comandStore.metrics["isTraveling"] ? 'Yes' : 'No' }}</p>
+      </div>
+      <div>
+        <p><strong>Flying:</strong> {{ comandStore.metrics["isFlyng"] ? 'Yes' : 'No' }}</p>
+        <p><strong>X:</strong> {{ comandStore.metrics["X"] ?? 'N/A'}} M</p>
+        <p><strong>Y:</strong> {{ comandStore.metrics["Y"] ?? 'N/A'}} M</p>
+        <p><strong>Z:</strong> {{ comandStore.metrics["Z"] ?? 'N/A'}} M</p>
+      </div>
     </div>
 
     <div class="mt-8 border-t pt-6">
