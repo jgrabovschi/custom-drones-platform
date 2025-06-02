@@ -265,7 +265,7 @@ watch(comandStore.statusGPS, (statusGPS) => {
     </div>
 
     <!-- Status -->
-    <div class="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+    <div v-if="comandStore.metrics" class="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
       <div>
         <p><strong>Lat:</strong> {{ comandStore.metrics["lat"] ?? 'N/A'  }}</p>
         <p><strong>Lng:</strong> {{ comandStore.metrics["lng"] ?? 'N/A'}}</p>
