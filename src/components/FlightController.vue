@@ -188,8 +188,7 @@ watch(comandStore.statusGPS, (statusGPS) => {
         <Button @click="changeMode">Change Mode</Button>
         <select v-model="selectedMode" class="border rounded px-2 py-1">
           <option value="GUIDED">Guided</option>
-          <option value="STABILIZE">Stabilize</option>
-          <option value="ALT_HOLD">Altitude Hold</option>
+          <option value="LOITER">Loiter</option>
         </select>
       </div>
 
