@@ -249,6 +249,24 @@ export const useComandStore = defineStore('comand', () => {
                 "Logging",                      
                 "Battery",   
             ],
+            "LOITER": [
+                "z/altitude Control",
+                "x/y altitude Control",
+                "RC Receiver",
+                "Gyro (1st 3D)",
+                "Accelerometer (1st 3D)",
+                "Magnetometer (1st 3D)",
+                "Absolute Pressure",
+                "GPS",
+                "Angular Rate Control",
+                "Attitude Stabilization",
+                "Yaw Position",
+                "Motor Outputs/Control",
+                "AHRS",
+                "Terrain",                   
+                "Logging",                      
+                "Battery",   
+            ],
             // Add more modes as needed
             };
 
