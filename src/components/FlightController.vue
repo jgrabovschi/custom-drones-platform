@@ -280,7 +280,7 @@ watch(comandStore.statusGPS, (statusGPS) => {
         <p><strong>Traveling:</strong> {{ comandStore.metrics["isTraveling"] ? 'Yes' : 'No' }}</p>
       </div>
       <div>
-        <p><strong>Flying:</strong> {{ comandStore.metrics["isFlyng"] ? 'Yes' : 'No' }}</p>
+        <p><strong>Flying:</strong> {{ comandStore.metrics["isFlying"] ? 'Yes' : 'No' }}</p>
         <p><strong>X:</strong> {{ comandStore.metrics["X"] ?? 'N/A'}} M</p>
         <p><strong>Y:</strong> {{ comandStore.metrics["Y"] ?? 'N/A'}} M</p>
         <p><strong>Z:</strong> {{ comandStore.metrics["Z"] ?? 'N/A'}} M</p>
